@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual Environment
+venv/
+.env/
+env/
+*.venv/
+
+# Database
+*.db  # SQLite database files
+*.sqlite3
+*.sql
+
+# Alembic
+alembic/versions/*.pyc
+alembic.ini  # If it contains sensitive database URLs
+
+# Environment Variables
+.env
+*.env
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Dependency Management
+pip-wheel-metadata/
+*.lock  # If using Poetry or similar
+
+# Testing
+.coverage
+coverage.xml
+*.cover
+.pytest_cache/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Sensitive Data
+secrets/
+*.key
+*.pem
+
+# Temporary Files
+*.bak
+*.swp
+*~
+*.tmp
+
+# Local Development
+*.local
+*.pid
+
+# FastAPI/Uvicorn
+*.sock
