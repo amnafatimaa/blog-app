@@ -22,7 +22,7 @@ env/
 
 # Alembic
 alembic/versions/*.pyc
-alembic.ini  # If it contains sensitive database URLs
+alembic.ini  
 
 # Environment Variables
 .env
