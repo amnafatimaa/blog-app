@@ -27,6 +27,3 @@ class Post(Base):
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     author_id = Column(Integer, ForeignKey("users.id"))
     author = relationship("User", back_populates="posts")
-
-# Define the reverse relationship from User to Post
-users.posts = relationship("Post", back_populates="author")

@@ -36,4 +36,4 @@ class User(UserBase):
         Pydantic configuration to enable ORM mode.
         This allows the model to read data directly from SQLAlchemy ORM objects.
         """
-        orm_mode = True  # Enables compatibility with ORMs like SQLAlchemy
+        from_attributes = True  # Enables compatibility with ORMs like SQLAlchemy
