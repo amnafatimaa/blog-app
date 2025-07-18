@@ -4,7 +4,7 @@ from app.schemas.user import UserCreate
 from app.dependencies.auth import get_password_hash
 
 def create_user(db: Session, user: UserCreate):
-    """Creates a new user in the database with a hashed password.
+    """Creates a new user in the database with hashed password.
 
     Args:
         db (Session): Database session for transaction management.
