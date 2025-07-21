@@ -3,7 +3,6 @@ from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
 from dotenv import load_dotenv
 import os
-from alembic import context
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -15,12 +14,16 @@ config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
 
 from app.models.user import User
 from app.models.post import Post
+from app.models.comments import Comment
 from app.database import Base
 
 target_metadata = Base.metadata
 
 def run_migrations_offline():
+    """Run migrations in 'offline' mode."""
     url = os.getenv("DATABASE_URL")
+    if url is None:
+        raise ValueError("DATABASE_URL environment variable not set")
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -31,6 +34,7 @@ def run_migrations_offline():
         context.run_migrations()
 
 def run_migrations_online():
+    """Run migrations in 'online' mode."""
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
@@ -38,7 +42,8 @@ def run_migrations_online():
     )
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata
         )
         with context.begin_transaction():
             context.run_migrations()
