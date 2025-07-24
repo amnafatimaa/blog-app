@@ -11,12 +11,13 @@ class User(Base):
         email (str): The unique email address of the user.
         hashed_password (str): The hashed password for user authentication.
         posts: Relationship to Post model, representing all posts authored by the user.
+        comments: Relationship to Comment model, representing all comments authored by the user.
     """
 
     __tablename__ = "users"
-
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     posts = relationship("Post", back_populates="author")
+    comments = relationship("Comment", back_populates="user")
