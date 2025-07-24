@@ -163,7 +163,7 @@ def delete_existing_comment(
             - 500: If a database error occurs during deletion.
     """
     # Check if the comment exists
-    comment = get_comment(db, comment_id)
+    comment = get_comment(db, comment_id) 
     if not comment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
 
@@ -177,7 +177,7 @@ def delete_existing_comment(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
     # Check if the current user is either the comment creator or the post creator
-    if current_user.id not in (comment.user_id, post.user_id):
+    if current_user.id not in (comment.user_id, post.author_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this comment")
 
     # Delete the comment
