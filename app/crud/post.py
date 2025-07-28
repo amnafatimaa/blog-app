@@ -19,7 +19,11 @@ def create_post(db: Session, post: PostCreate, user_id: int):
     # Create a new post instance with provided data and user ID
     db_post = Post(**post.dict(), author_id=user_id)
     db.add(db_post)
-    db.commit()
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
     db.refresh(db_post)
     return db_post
 
@@ -63,11 +67,16 @@ def update_post(db: Session, post_id: int, post: PostCreate):
     """
     # Fetch the post and update its attributes if it exists
     db_post = db.query(Post).filter(Post.id == post_id).first()
-    if db_post:
-        for key, value in post.dict().items():
-            setattr(db_post, key, value)
+    if not db_post:
+        return None
+    for key, value in post.dict().items():
+        setattr(db_post, key, value)
+    try:
         db.commit()
-        db.refresh(db_post)
+    except Exception:
+        db.rollback()
+        raise
+    db.refresh(db_post)
     return db_post
 
 def delete_post(db: Session, post_id: int):
@@ -82,7 +91,12 @@ def delete_post(db: Session, post_id: int):
     """
     # Fetch the post and delete it if it exists
     db_post = db.query(Post).filter(Post.id == post_id).first()
-    if db_post:
+    if not db_post:
+        return None
+    try:
         db.delete(db_post)
         db.commit()
+    except Exception:
+        db.rollback()
+        raise
     return db_post

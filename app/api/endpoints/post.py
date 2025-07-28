@@ -62,7 +62,7 @@ def read_post(post_id: int, db: Session = Depends(get_db)):
     # Retrieve post by ID and check if it exists
     post = get_post(db, post_id)
     if not post:
-        raise HTTPException(status_code=404, detail="Post not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     return post
 
 @router.put("/{post_id}", response_model=Post)
@@ -84,15 +84,17 @@ def update_existing_post(post_id: int, post: PostCreate, db: Session = Depends(g
     # Fetch the post and verify it exists
     db_post = get_post(db, post_id)
     if not db_post:
-        raise HTTPException(status_code=404, detail="Post not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     # Check if the current user is the author
     if db_post.author_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
     # Update the post with new data
     updated_post = update_post(db, post_id, post)
+    if not updated_post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found during update")
     return updated_post
 
-@router.delete("/{post_id}")
+@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_existing_post(post_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Deletes an existing post if the user is authorized.
 
@@ -110,10 +112,10 @@ def delete_existing_post(post_id: int, db: Session = Depends(get_db), current_us
     # Fetch the post and verify it exists
     db_post = get_post(db, post_id)
     if not db_post:
-        raise HTTPException(status_code=404, detail="Post not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     # Check if the current user is the author
     if db_post.author_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
     # Delete the post from the database
     delete_post(db, post_id)
-    return {"message": "Post deleted"}
+    return None
