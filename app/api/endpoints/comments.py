@@ -31,6 +31,10 @@ def create_new_comment(
     Raises:
         HTTPException: If there’s an issue with database operations or if the post does not exist.
     """
+    # Ensure the post exists before creating a comment
+    post = get_post(db, post_id)
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     return create_comment(db, comment.content, post_id, current_user.id)
 
 @router.get("/{post_id}/comments/", response_model=List[CommentResponse])
@@ -54,9 +58,8 @@ def read_comments(
     Raises:
         HTTPException: If there’s an issue with database operations or if the post does not exist.
     """
+    # Optionally check if post exists, but always return a list (even if empty)
     comments = get_comments_by_post(db, post_id, skip, limit)
-    if not comments:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No comments found for this post")
     return comments
 
 @router.get("/{post_id}/comments/{comment_id}", response_model=CommentResponse)
@@ -162,28 +165,20 @@ def delete_existing_comment(
             - 403: If the user is not authorized to delete the comment.
             - 500: If a database error occurs during deletion.
     """
-    # Check if the comment exists
     comment = get_comment(db, comment_id) 
     if not comment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
-
-    # Verify that the comment belongs to the specified post
     if comment.post_id != post_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Comment does not belong to the specified post")
-
-    # Check if the post exists and get the post creator
     post = get_post(db, post_id)
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-
-    # Check if the current user is either the comment creator or the post creator
     if current_user.id not in (comment.user_id, post.author_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this comment")
-
-    # Delete the comment
     try:
-        delete_comment(db, comment_id)
+        deleted = delete_comment(db, comment_id)
+        if not deleted:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found during deletion")
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to delete comment: {str(e)}")
-
     return None

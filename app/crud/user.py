@@ -16,9 +16,7 @@ def create_user(db: Session, user: UserCreate):
     Raises:
         Exception: If database operations fail (e.g., integrity errors).
     """
-    # Hash the user's password for security
     hashed_password = get_password_hash(user.password)
-    # Create a new user instance with hashed password
     db_user = User(username=user.username, email=user.email, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
@@ -35,5 +33,4 @@ def get_user_by_username(db: Session, username: str):
     Returns:
         User: The user object if found, None otherwise.
     """
-    # Query the user by their username
     return db.query(User).filter(User.username == username).first()

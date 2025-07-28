@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
+from app.schemas.user import User  # Import your existing User schema
 
 class PostBase(BaseModel):
     """Base Pydantic model for common post attributes.
@@ -27,15 +29,17 @@ class Post(PostBase):
         id (int): The unique identifier of the post.
         created_at (datetime): The creation timestamp of the post.
         author_id (int): The ID of the user who created the post.
+        author (User): The user who created the post (ONLY NEW FIELD ADDED).
         Inherits title and content from PostBase.
 
     Config:
-        orm_mode (bool): Enables ORM mode for compatibility with SQLAlchemy models.
+        from_attributes (bool): Enables ORM mode for compatibility with SQLAlchemy models.
     """
 
     id: int
     created_at: datetime
     author_id: int
+    author: Optional[User] = None  # ONLY ADD THIS ONE LINE
 
     class Config:
         from_attributes = True
